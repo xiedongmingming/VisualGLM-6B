@@ -13,7 +13,7 @@
 </p> -->
 
 ## Introduction
-VisualGLM-6B is an open-source, multi-modal dialog language model that supports **images, Chinese, and English**. The language model is based on [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B) with 62 billion parameters; the image part builds a bridge between the visual model and the language model through the training of [BLIP2-Qformer](https://arxiv.org/abs/2301.12597), with the total model comprising 78 billion parameters.
+VisualGLM-6B is an open-source, multi-modal dialog language model that supports **images, Chinese, and English**. The language model is based on [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B) with 6.2 billion parameters; the image part builds a bridge between the visual model and the language model through the training of [BLIP2-Qformer](https://arxiv.org/abs/2301.12597), with the total model comprising 7.8 billion parameters.
 
 VisualGLM-6B relies on 30M high-quality Chinese image-text pairs from the [CogView](https://arxiv.org/abs/2105.13290) dataset and 300M filtered English image-text pairs for pre-training, with equal weight for Chinese and English. This training method aligns visual information well to the semantic space of ChatGLM. In the subsequent fine-tuning phase, the model is trained on long visual question answering data to generate answers that align with human preferences.
 
@@ -66,18 +66,18 @@ print(response)
 
 If you use the SwissArmyTransformer library to call the model, the method is similar, and you can use the environment variable SAT_HOME to determine the model download location. In the directory of this repository:
 ```python
->>> import argparse
->>> from transformers import AutoTokenizer
->>> tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True)
->>> from model import chat, VisualGLMModel
->>> model, model_args = VisualGLMModel.from_pretrained('visualglm-6b', args=argparse.Namespace(fp16=True, skip_init=True))
->>> from sat.model.mixins import CachedAutoregressiveMixin
->>> model.add_mixin('auto-regressive', CachedAutoregressiveMixin())
->>> image_path = "your image path or URL"
->>> response, history, cache_image = chat(image_path, model, tokenizer, "Describe this picture.", history=[])
->>> print(response)
->>> response, history, cache_image = chat(None, model, tokenizer, "Where could this picture possibly have been taken?", history=history, image=cache_image)
->>> print(response)
+import argparse
+from transformers import AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True)
+from model import chat, VisualGLMModel
+model, model_args = VisualGLMModel.from_pretrained('visualglm-6b', args=argparse.Namespace(fp16=True, skip_init=True))
+from sat.model.mixins import CachedAutoregressiveMixin
+model.add_mixin('auto-regressive', CachedAutoregressiveMixin())
+image_path = "your image path or URL"
+response, history, cache_image = chat(image_path, model, tokenizer, "Describe this picture.", history=[])
+print(response)
+response, history, cache_image = chat(None, model, tokenizer, "Where could this picture possibly have been taken?", history=history, image=cache_image)
+print(response)
 ```
 
 Using the `sat` library can also easily carry out efficient parameter fine-tuning. <!-- TODO specific code -->
