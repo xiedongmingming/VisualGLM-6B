@@ -1,4 +1,4 @@
-# VisualGLM-6B
+# VISUALGLM-6B
 
 <p align="center">
 🤗 <a href="https://huggingface.co/THUDM/visualglm-6b" target="_blank">HF Repo</a> • ⚒️ <a href="https://github.com/THUDM/SwissArmyTransformer" target="_blank">SwissArmyTransformer (sat)</a> • 🐦 <a href="https://twitter.com/thukeg" target="_blank">Twitter</a> 
@@ -19,11 +19,13 @@ VisualGLM-6B is an open-source, multi-modal dialog language model that supports 
 
 VisualGLM-6B 是一个开源的，支持**图像、中文和英文**的多模态对话语言模型，语言模型基于 [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)，具有 62 亿参数；图像部分通过训练 [BLIP2-Qformer](https://arxiv.org/abs/2301.12597) 构建起视觉模型与语言模型的桥梁，整体模型共78亿参数。
 
-VisualGLM-6B 依靠来自于 [CogView](https://arxiv.org/abs/2105.13290) 数据集的30M高质量中文图文对，与300M经过筛选的英文图文对进行预训练，中英文权重相同。该训练方式较好地将视觉信息对齐到ChatGLM的语义空间；之后的微调阶段，模型在长视觉问答数据上训练，以生成符合人类偏好的答案。
 
-VisualGLM-6B 由 [SwissArmyTransformer](https://github.com/THUDM/SwissArmyTransformer)(简称`sat`) 库训练，这是一个支持Transformer灵活修改、训练的工具库，支持Lora、P-tuning等参数高效微调方法。本项目提供了符合用户习惯的huggingface接口，也提供了基于sat的接口。
+VISUALGLM-6B依靠来自于[COGVIEW](https://arxiv.org/abs/2105.13290)数据集的30M高质量中文图文对，与300M经过筛选的英文图文对进行预训练，中英文权重相同。该训练方式较好地将视觉信息对齐到CHATGLM的语义空间；之后的微调阶段，模型在长视觉问答数据上训练，以生成符合人类偏好的答案。
+
+VISUALGLM-6B由[SWISSARMYTRANSFORMER](https://github.com/THUDM/SwissArmyTransformer)(简称`SAT`)库训练，这是一个支持TRANSFORMER灵活修改、训练的工具库，支持LORA、P-TUNING等参数高效微调方法。本项目提供了符合用户习惯的HUGGINGFACE接口，也提供了基于SAT的接口。
 
 不过，由于 VisualGLM-6B 仍处于v1版本，目前已知其具有相当多的[**局限性**](README.md#局限性)，如图像描述事实性/模型幻觉问题，图像细节信息捕捉不足，以及一些来自语言模型的局限性。请大家在使用前了解这些问题，评估可能存在的风险。在VisualGLM之后的版本中，将会着力对此类问题进行优化。
+
 
 结合模型量化技术，用户可以在消费级的显卡上进行本地部署（INT4量化级别下最低只需8.7G显存）。
 
@@ -34,7 +36,7 @@ VisualGLM-6B 开源模型旨在与开源社区一起推动大模型技术发展�
 尽管模型在训练的各个阶段都尽力确保数据的合规性和准确性，但由于 VisualGLM-6B 模型规模较小，且模型受概率随机性因素影响，无法保证输出内容的准确性，且模型易被误导（详见局限性部分）。本项目不承担开源模型和代码导致的数据安全、舆情风险或发生任何模型被误导、滥用、传播、不当利用而产生的风险和责任。
 
 ## 样例
-VisualGLM-6B 可以进行图像的描述的相关知识的问答。
+VISUALGLM-6B可以进行图像的描述的相关知识的问答。
 ![泰坦尼克号样例](examples/chat_example1.png)
 
 <details>
@@ -50,10 +52,10 @@ VisualGLM-6B 可以进行图像的描述的相关知识的问答。
 
 ### 模型推理
 
-使用pip安装依赖
+使用PIP安装依赖
 ```
 pip install -i https://pypi.org/simple -r requirements.txt
-# 国内请使用aliyun镜像，TUNA等镜像同步最近出现问题，命令如下
+# 国内请使用ALIYUN镜像，TUNA等镜像同步最近出现问题，命令如下
 pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 ```
 此时默认会安装`deepspeed`库（支持`sat`库训练），此库对于模型推理并非必要，同时部分Windows环境安装此库时会遇到问题。
@@ -289,4 +291,4 @@ model = quantize(model.transformer, args.quant).cuda()
   year={2021}
 }
 ```
-在VisualGLM-6B的指令微调阶段的数据集中，包含了来自[MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4)和[LLAVA](https://github.com/haotian-liu/LLaVA)项目的一部分英文图文数据，以及许多经典的跨模态工作数据集，衷心感谢他们的贡献。
+在VISUALGLM-6B的指令微调阶段的数据集中，包含了来自[MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4)和[LLAVA](https://github.com/haotian-liu/LLaVA)项目的一部分英文图文数据，以及许多经典的跨模态工作数据集，衷心感谢他们的贡献。
