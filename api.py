@@ -27,6 +27,11 @@ async def visual_glm(request: Request):
 
     request_data = json.loads(json_post)
 
+    # 请求内容：
+    # 1. text
+    # 2. image
+    # 3. history
+
     input_text, input_image_encoded, history = request_data['text'], request_data['image'], request_data['history']
 
     input_para = {
@@ -38,17 +43,29 @@ async def visual_glm(request: Request):
         "repetition_penalty": 1.2
     }
 
-    input_para.update(request_data)
+    input_para.update(request_data)  # 合并
 
     is_zh = is_chinese(input_text)
 
     input_data = generate_input(input_text, input_image_encoded, history, input_para)
 
     input_image, gen_kwargs = input_data['input_image'], input_data['gen_kwargs']
+
     with torch.no_grad():
-        answer, history, _ = chat(None, model, tokenizer, input_text, history=history, image=input_image, \
-                                  max_length=gen_kwargs['max_length'], top_p=gen_kwargs['top_p'], \
-                                  top_k=gen_kwargs['top_k'], temperature=gen_kwargs['temperature'], english=not is_zh)
+        #
+        answer, history, _ = chat(
+            None,
+            model,
+            tokenizer,
+            input_text,
+            history=history,
+            image=input_image,  # BASE64解码之后
+            max_length=gen_kwargs['max_length'],
+            top_p=gen_kwargs['top_p'],
+            top_k=gen_kwargs['top_k'],
+            temperature=gen_kwargs['temperature'],
+            english=not is_zh
+        )
 
     now = datetime.datetime.now()
 

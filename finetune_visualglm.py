@@ -8,17 +8,22 @@ from model import VisualGLMModel
 from sat.model.finetune import PTuningV2Mixin
 from sat.model.finetune.lora_mixin import LoraMixin
 
+
 class FineTuneVisualGLMModel(VisualGLMModel):
     def __init__(self, args, transformer=None, parallel_output=True, **kw_args):
         super().__init__(args, transformer=transformer, parallel_output=parallel_output, **kw_args)
         if args.use_ptuning:
-            self.add_mixin("ptuning", PTuningV2Mixin(args.num_layers, args.hidden_size // args.num_attention_heads, args.num_attention_heads, args.pre_seq_len))
+            self.add_mixin("ptuning", PTuningV2Mixin(args.num_layers, args.hidden_size // args.num_attention_heads,
+                                                     args.num_attention_heads, args.pre_seq_len))
         if args.use_lora:
             # If you use lora on other "normal" Transformer, just use it with head_first=False (by default)
-            self.add_mixin("lora", LoraMixin(args.num_layers, args.lora_rank, head_first=True, num_attention_heads=args.num_attention_heads, hidden_size_per_attention_head=args.hidden_size // args.num_attention_heads, layer_range=list(range(0, 28, 14))), reinit=True)
+            self.add_mixin("lora", LoraMixin(args.num_layers, args.lora_rank, head_first=True,
+                                             num_attention_heads=args.num_attention_heads,
+                                             hidden_size_per_attention_head=args.hidden_size // args.num_attention_heads,
+                                             layer_range=list(range(0, 28, 14))), reinit=True)
             # self.get_mixin("eva").model.glm_proj = replace_linear_with_lora(self.get_mixin("eva").model.glm_proj, LoraLinear, args.lora_rank)
         self.args = args
-        
+
     @classmethod
     def add_model_specific_args(cls, parser):
         group = parser.add_argument_group('VisualGLM-finetune', 'VisualGLM finetune Configurations')
@@ -66,11 +71,12 @@ def get_batch(data_iterator, args, timers):
     img = data_i['image']
     if args.fp16:
         img = img.half()
-    
+
     return tokens, labels, img, data['pre_image']
 
 
 from torch.nn import CrossEntropyLoss
+
 
 def forward_step(data_iterator, model, args, timers):
     """Forward step."""
@@ -102,6 +108,7 @@ from torch.utils.data import Dataset
 import json
 from PIL import Image
 
+
 class FewShotDataset(Dataset):
     def __init__(self, path, processor, tokenizer, args):
         max_seq_length = args.max_source_length + args.max_target_length
@@ -114,7 +121,7 @@ class FewShotDataset(Dataset):
             image = processor(Image.open(item['img']).convert('RGB'))
             input0 = tokenizer.encode("<img>", add_special_tokens=False)
             input1 = [tokenizer.pad_token_id] * args.image_length
-            input2 = tokenizer.encode("</img>问："+item['prompt']+"\n答：", add_special_tokens=False)
+            input2 = tokenizer.encode("</img>问：" + item['prompt'] + "\n答：", add_special_tokens=False)
             a_ids = sum([input0, input1, input2], [])
             b_ids = tokenizer.encode(text=item['label'], add_special_tokens=False)
             if len(a_ids) > args.max_source_length - 1:
@@ -126,8 +133,8 @@ class FewShotDataset(Dataset):
 
             context_length = input_ids.index(tokenizer.bos_token_id)
             mask_position = context_length - 1
-            labels = [-100] * context_length + input_ids[mask_position+1:]
-            
+            labels = [-100] * context_length + input_ids[mask_position + 1:]
+
             pad_len = max_seq_length - len(input_ids)
             input_ids = input_ids + [tokenizer.pad_token_id] * pad_len
             labels = labels + [tokenizer.pad_token_id] * pad_len
@@ -174,6 +181,8 @@ if __name__ == '__main__':
     model, args = FineTuneVisualGLMModel.from_pretrained(model_type, args)
     tokenizer = get_tokenizer(args)
     label_pad_token_id = -100 if args.ignore_pad_token_for_loss else tokenizer.pad_token_id
+
+
     def data_collator(examples):
         for example in examples:
             example['input_ids'] = torch.tensor(example['input_ids'], dtype=torch.long)
@@ -185,4 +194,7 @@ if __name__ == '__main__':
             'pre_image': example['pre_image']
         }
         return ret
-    training_main(args, model_cls=model, forward_step_function=forward_step, create_dataset_function=create_dataset_function, collate_fn=data_collator)
+
+
+    training_main(args, model_cls=model, forward_step_function=forward_step,
+                  create_dataset_function=create_dataset_function, collate_fn=data_collator)
