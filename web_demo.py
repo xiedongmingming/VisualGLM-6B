@@ -93,7 +93,7 @@ def request_model(input_text, temperature, top_p, image_prompt, result_previous)
     return "", result_text
 
 
-DESCRIPTION = '''# <a href="https://github.com/THUDM/VisualGLM-6B">VisualGLM</a>'''
+DESCRIPTION = '''# <a href="https://github.com/THUDM/VisualGLM-6B">VISUALGLM</a>'''
 
 MAINTENANCE_NOTICE1 = 'Hint 1: If the app report "Something went wrong, connection error out", please turn off your proxy and retry.\nHint 2: If you upload a large size of image like 10MB, it may take some time to upload and process. Please be patient and wait.'
 MAINTENANCE_NOTICE2 = '提示1: 如果应用报了“Something went wrong, connection error out”的错误，请关闭代理并重试。\n提示2: 如果你上传了很大的图片，比如10MB大小，那将需要一些时间来上传和处理，请耐心等待。'
@@ -167,15 +167,35 @@ def main(args):
 
         print(gr.__version__)
 
-        run_button.click(fn=request_model, inputs=[input_text, temperature, top_p, image_prompt, result_text],
-                         outputs=[input_text, result_text])
-        input_text.submit(fn=request_model, inputs=[input_text, temperature, top_p, image_prompt, result_text],
-                          outputs=[input_text, result_text])
+        run_button.click( # 生成
+            fn=request_model,
+            inputs=[input_text, temperature, top_p, image_prompt, result_text],
+            outputs=[input_text, result_text]
+        )
 
-        clear_button.click(fn=clear_fn, inputs=clear_button, outputs=[input_text, result_text, image_prompt])
+        input_text.submit(
+            fn=request_model,
+            inputs=[input_text, temperature, top_p, image_prompt, result_text],
+            outputs=[input_text, result_text]
+        )
 
-        image_prompt.upload(fn=clear_fn2, inputs=clear_button, outputs=[result_text])
-        image_prompt.clear(fn=clear_fn2, inputs=clear_button, outputs=[result_text])
+        clear_button.click(
+            fn=clear_fn,
+            inputs=clear_button,
+            outputs=[input_text, result_text, image_prompt]
+        )
+
+        image_prompt.upload(
+            fn=clear_fn2,
+            inputs=clear_button,
+            outputs=[result_text]
+        )
+
+        image_prompt.clear(
+            fn=clear_fn2,
+            inputs=clear_button,
+            outputs=[result_text]
+        )
 
         print(gr.__version__)
 
